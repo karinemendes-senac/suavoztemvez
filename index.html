@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula 6 - Executar Plano de Mídia</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-dark: #07070a;
+            --bg-card: #0f1016;
+            --primary: #ff5e00; /* Laranja Premium */
+            --primary-glow: rgba(255, 94, 0, 0.15);
+            --text-main: #ffffff;
+            --text-muted: #8a8f98;
+            --border: rgba(255, 255, 255, 0.08);
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #222;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Layout Elements */
+        .glow-bg {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, var(--primary-glow) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(80px);
+            animation: pulseGlow 10s infinite alternate ease-in-out;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+            100% { transform: translate(-50%, -45%) scale(1.2); opacity: 0.9; }
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 2rem 4rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--bg-dark) 40%, rgba(7,7,10,0));
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+        }
+
+        .brand {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: -0.05em;
+            text-transform: uppercase;
+        }
+
+        .brand span {
+            color: var(--primary);
+        }
+
+        nav {
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Section Global Rules */
+        section {
+            position: relative;
+            min-height: 100vh;
+            padding: 8rem 4rem 4rem 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            z-index: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Typography Visual System */
+        .slide-tag {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .slide-tag::before {
+            content: '';
+            display: inline-block;
+            width: 12px;
+            height: 1px;
+            background-color: var(--primary);
+        }
+
+        h1.massive-title {
+            font-family: var(--font-display);
+            font-size: clamp(3.5rem, 8vw, 7.5rem);
+            font-weight: 700;
+            line-height: 0.9;
+            letter-spacing: -0.04em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+        }
+
+        h2.section-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 4vw, 4rem);
+            font-weight: 700;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            text-transform: uppercase;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 100fr));
+            gap: 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+        }
+
+        .meta-item {
+            font-family: var(--font-display);
+        }
+
+        .meta-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .meta-value {
+            font-size: 1.25rem;
+            font-weight: 400;
+        }
+
+        /* Giant Data Highlight */
+        .giant-number-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .giant-number {
+            font-family: var(--font-display);
+            font-size: clamp(5rem, 15vw, 13rem);
+            font-weight: 700;
+            line-height: 0.8;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255,255,255,0.3);
+        }
+
+        .giant-number.filled {
+            color: var(--text-main);
+            -webkit-text-stroke: none;
+        }
+
+        .giant-number.colored {
+            color: var(--primary);
+            -webkit-text-stroke: none;
+            text-shadow: 0 0 40px var(--primary-glow);
+        }
+
+        /* Editorial Grid Layouts */
+        .editorial-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 11fr);
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .col-4 { grid-column: span 4; }
+        .col-5 { grid-column: span 5; }
+        .col-6 { grid-column: span 6; }
+        .col-7 { grid-column: span 7; }
+        .col-8 { grid-column: span 8; }
+        .col-12 { grid-column: span 12; }
+
+        .text-block-premium {
+            font-size: clamp(1.1rem, 2vw, 1.6rem);
+            font-weight: 300;
+            color: rgba(255,255,255,0.85);
+            letter-spacing: -0.01em;
+        }
+
+        /* Custom UI Blocks */
+        .indicator-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: 4px;
+            height: 100%;
+            transition: border-color 0.4s ease;
+        }
+
+        .indicator-card:hover {
+            border-color: var(--primary);
+        }
+
+        .indicator-num {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+        }
+
+        .indicator-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 0.05em;
+        }
+
+        .indicator-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            display: inline-block;
+            font-family: var(--font-display);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-main);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-top: 1rem;
+        }
+
+        .status-badge.done {
+            background: rgba(0, 255, 100, 0.15);
+            color: #00ff64;
+        }
+
+        /* Statement/Quote Block */
+        .statement-box {
+            border-left: 2px solid var(--primary);
+            padding-left: 3rem;
+            margin: 4rem 0;
+        }
+
+        .statement-text {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 4vw, 3.5rem);
+            line-height: 1.1;
+            font-weight: 400;
+            letter-spacing: -0.02em;
+        }
+
+        .vs-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            position: relative;
+        }
+
+        .vs-divider {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vs-circle {
+            background: var(--bg-dark);
+            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .vs-card {
+            padding: 3rem;
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--border);
+        }
+
+        .vs-card.highlight {
+            border-color: rgba(255, 94, 0, 0.3);
+            background: linear-gradient(135deg, rgba(255, 94, 0, 0.02), rgba(0,0,0,0));
+        }
+
+        /* Metric Grid */
+        .metric-strip-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 100fr));
+            gap: 1.5rem;
+        }
+
+        .metric-strip {
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.01);
+        }
+
+        .metric-strip-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-strip-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Example Container Styles */
+        .example-header-box {
+            border: 1px solid var(--primary);
+            padding: 3rem;
+            margin-bottom: 4rem;
+            background: linear-gradient(to right, rgba(255, 94, 0, 0.05), rgba(0,0,0,0));
+        }
+
+        .channel-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 4rem;
+            margin-bottom: 3rem;
+        }
+
+        .channel-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .channel-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        .channel-budget {
+            font-family: var(--font-display);
+            font-size: 1.8rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .channel-subsection {
+            margin-bottom: 2rem;
+        }
+
+        .channel-subsection-label {
+            font-family: var(--font-display);
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.75rem;
+        }
+
+        .source-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            background: rgba(255,255,255,0.05);
+            padding: 0.2rem 0.5rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            border-radius: 2px;
+        }
+
+        /* Responsive Layout Overrides */
+        @media(max-width: 1024px) {
+            section { padding: 6rem 2rem 2rem 2rem; }
+            header { padding: 1.5rem 2rem; }
+            .vs-container { grid-template-columns: 1fr; gap: 2rem; }
+            .vs-divider { display: none; }
+            .editorial-grid { display: flex; flex-direction: column; gap: 2rem; }
+            .channel-block { padding: 2rem; }
+            .channel-title-row { flex-direction: column; gap: 0.5rem; }
+        }
+
+        /* Scroll Animation Utility Classes */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .fade-in-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-bg"></div>
+
+    <header>
+        <div class="brand">UC4 <span>Executar Plano de Mídia</span></div>
+        <nav>Técnico em Publicidade e Propaganda</nav>
+    </header>
+
+    <section id="slide1">
+        <div class="container">
+            <div class="slide-tag">SLIDE 1 - CAPA</div>
+            <h1 class="massive-title">Aula 6</h1>
+            
+            <div class="editorial-grid">
+                <div class="col-8 text-block-premium">
+                    <p>Atividade Prática R$ 35.000</p>
+                    <p style="color: var(--primary); font-weight: 700; margin-top: 0.5rem;">Distribuir a verba, defender cada canal com dados e projetar o retorno</p>
+                </div>
+            </div>
+
+            <div class="statement-box fade-in-up">
+                <div class="slide-tag">Fio Condutor da UC4</div>
+                <p class="statement-text">Vocês são uma agência gerenciando uma campanha de R$ 35.000.<br>Hoje: como defender cada canal com dados e projetar o retorno.</p>
+            </div>
+
+            <div class="hero-meta">
+                <div class="meta-item">
+                    <div class="meta-label">Data</div>
+                    <div class="meta-value">22 de junho de 2026 | Segunda-feira</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Horário & Local</div>
+                    <div class="meta-value">18h40 às 22h00 | Lab de Informática</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Foco</div>
+                    <div class="meta-value">Indicadores 2 e 3</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-label">Professora</div>
+                    <div class="meta-value">Karine Mendes | 2026</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="slide2">
+        <div class="container">
+            <div class="slide-tag">SLIDE 2, 3 & 4 - O QUE ESTA AULA TRABALHA</div>
+            <h2 class="section-title">O que esta aula trabalha<br><span style="color: var(--text-muted); font-size: 2rem; font-weight:300;">Indicadores, Conhecimentos, Habilidades e Atitudes</span></h2>
+            
+            <div class="editorial-grid" style="margin-top: 4rem;">
+                <div class="col-4 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">02</div>
+                        <h3>Indicador</h3>
+                        <p>Auxilia no direcionamento da veiculação e elabora orçamento da campanha, de acordo com o público-alvo e recursos do cliente.</p>
+                    </div>
+                </div>
+
+                <div class="col-4 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">03</div>
+                        <h3>Indicador</h3>
+                        <p>Elabora planilha de mídia, constando dados dos veículos, períodos de veiculação e valores das estratégias propostas.</p>
+                    </div>
+                </div>
+
+                <div class="col-4 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">C/H</div>
+                        <h3>Conhecimentos & Habilidades</h3>
+                        <p style="margin-bottom: 0.5rem;"><strong>C - Briefing:</strong> características e interpretação das informações</p>
+                        <p style="margin-bottom: 0.5rem;"><strong>H -</strong> Planejamento estratégico de mídia</p>
+                        <p style="margin-bottom: 0.5rem;"><strong>•</strong> Coletar informações</p>
+                        <p style="margin-bottom: 0.5rem;"><strong>•</strong> Executar pesquisa de mídia</p>
+                        <p><strong>•</strong> Elaborar documentos e relatórios</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editorial-grid" style="margin-top: 2rem;">
+                <div class="col-12 fade-in-up">
+                    <div class="indicator-card" style="padding: 2rem 3rem;">
+                        <span class="slide-tag" style="margin-bottom:0.5rem;">ATITUDES E VALORES</span>
+                        <p class="text-block-premium" style="font-size: 1.2rem;">Responsabilidade e comprometimento | Atitude propositiva na elaboração do plano</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="slide5">
+        <div class="container">
+            <div class="slide-tag">SLIDE 5, 6 & 7 - ENTREGAS DO GRUPO</div>
+            <h2 class="section-title">O que o grupo entrega<br><span style="color: var(--text-muted); font-size: 2rem; font-weight:300;">Ao final das Aulas 6 e 7</span></h2>
+
+            <div class="editorial-grid" style="margin-top: 3rem;">
+                <div class="col-6">
+                    <h3 class="slide-tag">Já concluído</h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>✓ Item 1: Contexto da atividade <span class="status-badge done">CONCLUÍDO</span></div>
+                        <div>✓ Item 2: Duração da campanha <span class="status-badge done">CONCLUÍDO</span></div>
+                        <div>✓ Item 3: Empresa e objetivo <span class="status-badge done">CONCLUÍDO</span></div>
+                        <div>✓ Item 4: Mídias escolhidas (mínimo 5) <span class="status-badge done">CONCLUÍDO</span></div>
+                        <div>✓ Item 5: Função de cada mídia no funil <span class="status-badge done">CONCLUÍDO</span></div>
+                        <div>✓ Persona da empresa <span class="status-badge done">CONCLUÍDO</span></div>
+                    </div>
+                </div>
+
+                <div class="col-6">
+                    <h3 class="slide-tag" style="color: var(--primary);">O que constrói agora</h3>
+                    <p class="text-block-premium" style="margin-bottom: 1.5rem; font-size:1.3rem;">Para cada canal escolhido, uma defesa completa com:</p>
+                    <div style="display: flex; flex-direction: column; gap: 1rem; color: rgba(255,255,255,0.9);">
+                        <div><strong style="color: var(--primary);">1 -</strong> Quanto da verba vai para esse canal</div>
+                        <div><strong style="color: var(--primary);">2 -</strong> Por que esse canal faz sentido para a persona, com dado quantitativo e fonte</div>
+                        <div><strong style="color: var(--primary);">3 -</strong> Por que esse canal faz sentido para o objetivo, com dado quantitativo e fonte</div>
+                        <div><strong style="color: var(--primary);">4 -</strong> Qual ROAS esperam desse canal, pesquisado pelo grupo com fonte citada</div>
+                        <div><strong style="color: var(--primary);">5 -</strong> Quais métricas e KPIs vão usar para comprovar o retorno desse canal</div>
+                    </div>
+                    <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px dashed var(--border); font-size: 0.9rem; color: var(--text-muted);">
+                        Resultado final: documento Word preenchido com o template da professora.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="slide8">
+        <div class="container">
+            <div class="slide-tag">SLIDE 8, 9, 10 & 11 - A LÓGICA CENTRAL</div>
+            <h2 class="section-title">A lógica central dessas duas aulas</h2>
+
+            <div class="statement-box fade-in-up">
+                <p class="statement-text">"Qualquer um coloca dinheiro em mídia.<br><span style="color: var(--primary);">Profissional de mídia defende onde coloca e por quê.</span>"</p>
+            </div>
+
+            <div class="editorial-grid" style="margin-top: 3rem; margin-bottom: 4rem;">
+                <div class="col-4">
+                    <p class="text-block-premium" style="font-size: 1.2rem; color: var(--text-muted);">A diferença entre amador e profissional não é saber o nome dos canais. É conseguir responder:</p>
+                </div>
+                <div class="col-8">
+                    <p class="statement-text" style="font-size: 2.2rem; font-weight: 700; color: transparent; -webkit-text-stroke: 1px #fff;">"Por que R$ 8.000 no Google Search e não R$ 8.000 no rádio?"</p>
+                </div>
+            </div>
+
+            <h3 class="slide-tag">A resposta está sempre em três lugares</h3>
+            <div class="editorial-grid" style="margin-top: 1.5rem; margin-bottom: 4rem;">
+                <div class="col-4">
+                    <div class="indicator-card">
+                        <h3>Na persona</h3>
+                        <p>onde ela está, o que ela faz, como ela decide</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="indicator-card">
+                        <h3>No objetivo</h3>
+                        <p>qual canal tem mais chance de gerar o resultado que a campanha precisa</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="indicator-card">
+                        <h3>Nos dados</h3>
+                        <p>o que pesquisas e relatórios de mercado dizem sobre esse canal no seu segmento</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vs-container fade-in-up">
+                <div class="vs-divider"><div class="vs-circle">VS</div></div>
+                
+                <div class="vs-card">
+                    <div class="slide-tag">OPINIÃO SEM DADO</div>
+                    <p class="text-block-premium">"Escolhemos o Instagram porque é popular."</p>
+                    <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--text-muted);">Opinião sem dado é achismo.</p>
+                </div>
+
+                <div class="vs-card highlight">
+                    <div class="slide-tag" style="color: var(--primary);">ESTRATÉGIA COM DADO</div>
+                    <p class="text-block-premium" style="font-size: 1.3rem; line-height: 1.4;">"Escolhemos o Instagram porque 89% das mulheres de 18 a 29 anos no Brasil usam a plataforma (We Are Social 2024) e 62% afirmam ter descoberto uma marca nova por lá nos últimos 30 dias."</p>
+                    <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--primary); font-weight: bold;">Defesa com dado é estratégia.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="slide12">
+        <div class="container">
+            <div class="slide-tag">SLIDE 12 A 17 - ESTRUTURA DA DEFESA</div>
+            <h2 class="section-title">Estrutura da defesa de cada canal<br><span style="color: var(--text-muted); font-size: 2rem; font-weight:300;">Cinco passos obrigatórios para cada mídia no template</span></h2>
+
+            <div class="editorial-grid" style="margin-top: 4rem;">
+                <div class="col-4 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">1</div>
+                        <h3>Quanto vou investir nesse canal?</h3>
+                        <p>Defina o valor em reais. A justificativa do valor vem nos passos seguintes.</p>
+                    </div>
+                </div>
+
+                <div class="col-4 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">2</div>
+                        <h3>Por que esse canal faz sentido para a minha persona?</h3>
+                        <p>Descreva o comportamento da persona nesse canal. Traga um dado quantitativo que confirme que pessoas com esse perfil usam esse canal dessa forma.</p>
+                        <div class="status-badge">comportamento + dado + fonte</div>
+                    </div>
+                </div>
+
+                <div class="col-4 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">3</div>
+                        <h3>Por que esse canal faz sentido para o meu objetivo?</h3>
+                        <p>Explique o que esse canal entrega que ajuda a atingir o objetivo da campanha. Traga um dado que mostre a eficiência desse canal para esse tipo de resultado.</p>
+                        <div class="status-badge">conexão + dado eficiência + fonte</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editorial-grid" style="margin-top: 2rem;">
+                <div class="col-6 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">4</div>
+                        <h3>Qual ROAS espero desse canal?</h3>
+                        <p>Pesquise o benchmark de ROAS para esse canal no segmento da empresa. Não invente. Cite a fonte.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 fade-in-up">
+                    <div class="indicator-card">
+                        <div class="indicator-num">5</div>
+                        <h3>Como vou provar o retorno? Quais métricas e KPIs vou monitorar?</h3>
+                        <p>Defina as métricas que vão mostrar se esse canal entregou o que prometeu. A escolha das métricas depende do canal e do objetivo. Canais digitais têm métricas diretas. Canais offline têm métricas indiretas mas igualmente válidas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="statement-box fade-in-up" style="border-color: var(--primary); background: rgba(255,94,0,0.02); padding: 2rem;">
+                <p class="statement-text" style="font-size: 1.8rem;">Defesa sem dado não é defesa. É opinião.<br><span style="color: var(--primary); font-size: 1.4rem; font-weight: 300;">Cada passo precisa de: afirmação + dado quantitativo + fonte.</span></p>
+            </div>
+        </div>
+    </section>
+
+    <section id="slide18">
+        <div class="container">
+            <div class="slide-tag">SLIDE 18 A 24 - MÉTRICAS E KPIs</div>
+            <h2 class="section-title">Métricas e KPIs: como escolher para cada canal<br><span style="color: var(--text-muted); font-size: 2rem; font-weight:300;">O grupo escolhe de acordo com o canal e o objetivo da campanha</span></h2>
+
+            <div style="margin-top: 4rem;">
+                <h3 class="slide-tag">Canais Digitais — Métricas Diretas</h3>
+                <div class="metric-strip-grid">
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">Alcance e impressões</div>
+                        <div class="metric-strip-desc">quantas pessoas foram impactadas</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">CTR (taxa de clique)</div>
+                        <div class="metric-strip-desc">percentual de quem viu e clicou</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">CPC (custo por clique)</div>
+                        <div class="metric-strip-desc">quanto custou cada clique</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">CPL (custo por lead)</div>
+                        <div class="metric-strip-desc">quanto custou cada cadastro ou contato gerado</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">Taxa de conversão</div>
+                        <div class="metric-strip-desc">percentual de quem clicou e comprou ou agendou</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">ROAS realizado</div>
+                        <div class="metric-strip-desc">receita gerada dividida pelo valor investido no canal</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">CAC (custo de aquisição de cliente)</div>
+                        <div class="metric-strip-desc">quanto custou cada venda fechada</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 4rem;">
+                <h3 class="slide-tag">Canais Offline — Métricas Indiretas mas Obrigatórias</h3>
+                <div class="metric-strip-grid">
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">Rádio</div>
+                        <div class="metric-strip-desc">Alcance estimado da emissora (Ibope/Kantar) | Número de inserções veiculadas | Aumento de menções espontâneas à marca no período | Volume de ligações ou visitas durante o período da campanha</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">Outdoor e mídia exterior</div>
+                        <div class="metric-strip-desc">OTS (Opportunity to See) estimado pelo fornecedor | Fluxo de veículos/pedestres na região do painel | Aumento de buscas pelo nome da marca no Google durante o período</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">TV</div>
+                        <div class="metric-strip-desc">GRP (Gross Rating Point) | Alcance e frequência da campanha | Audiência do programa veiculado | Aumento de tráfego no site ou loja durante a exibição</div>
+                    </div>
+                    <div class="metric-strip">
+                        <div class="metric-strip-title">Panfleto e material impresso</div>
+                        <div class="metric-strip-desc">Quantidade distribuída no período | Cupom de desconto rastreável | Código promocional exclusivo para medir retorno</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="statement-box fade-in-up" style="margin-top: 4rem;">
+                <h3 class="slide-tag">Como o grupo define as métricas</h3>
+                <p class="statement-text" style="font-size: 1.5rem; font-weight: 300;">A pergunta que define as métricas:<br><strong style="color: var(--primary);">"Como vou saber, ao final, se esse canal fez o que prometeu?"</strong><br>A resposta são as métricas.</p>
+                <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 1rem;">Olha para o objetivo da campanha. Olha para o canal. Pergunta: qual número mostra se funcionou?<br>
+                • Se o objetivo era vender: número de vendas e ROAS realizado.<br>
+                • Se o objetivo era gerar leads: CPL e número de leads.<br>
+                • Se o objetivo era alcance offline: OTS, inserções veiculadas e aumento de busca pelo nome da marca.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="slide25">
+        <div class="container">
+            <div class="slide-tag">SLIDE 25 A 31 - ROAS: CONCEITO E FONTES</div>
+            <h2 class="section-title">ROAS: o que é, como calcular e onde pesquisar</h2>
+
+            <div class="editorial-grid" style="margin-top: 4rem; align-items: center;">
+                <div class="col-6">
+                    <div class="giant-number-wrapper">
+                        <div class="giant-number colored">ROAS</div>
+                    </div>
+                    <p class="text-block-premium" style="font-size: 1.8rem; margin-bottom: 1rem;">Retorno Sobre Investimento em Mídia</p>
+                    <p class="statement-text" style="font-size: 1.5rem; color: var(--primary);">ROAS = Receita gerada ÷ Investimento em mídia</p>
+                </div>
+                <div class="col-6">
+                    <div class="indicator-card" style="border-color: rgba(255,255,255,0.15);">
+                        <span class="slide-tag">Exemplo Prático</span>
+                        <p class="text-block-premium" style="font-size: 1.4rem; color: #fff; margin-bottom: 1rem;">R$ 105.000 gerados ÷ R$ 35.000 investidos = ROAS 3x</p>
+                        <p>Para cada R$ 1 investido em mídia, a campanha gerou R$ 3 em receita.</p>
+                        <div class="status-badge done" style="margin-top: 1.5rem; font-size: 0.9rem; padding: 0.5rem 1rem;">Na atividade: o ROAS esperado deve estar entre 2x e 4x.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="vs-container fade-in-up" style="margin-top: 4rem; margin-bottom: 4rem;">
+                <div class="vs-divider"><div class="vs-circle">!</div></div>
+                <div class="vs-card">
+                    <div class="slide-tag" style="color: #ff3b30;">O que o grupo NÃO faz</div>
+                    <p>• Não inventa o ROAS.</p>
+                    <p style="margin-top: 0.5rem;">• Não usa o número mais alto para impressionar.</p>
+                </div>
+                <div class="vs-card" style="border-color: rgba(0, 255, 100, 0.2);">
+                    <div class="slide-tag" style="color: #00ff64;">O que o grupo FAZ</div>
+                    <p>• Pesquisa o benchmark de ROAS para o canal específico no segmento específico da empresa escolhida.</p>
+                    <p style="margin-top: 0.5rem;">• Cita a fonte.</p>
+                    <p style="margin-top: 0.5rem; color: var(--text-muted); font-size: 0.85rem;">Atenção: ROAS varia por segmento, ticket médio e qualidade da campanha. O ROAS de Google Search para e-commerce de moda é diferente do ROAS de Google Search para clínica odontológica. O grupo precisa encontrar o benchmark do seu setor, não o número genérico.</p>
+                </div>
+            </div>
+
+            <h3 class="slide-tag">Fontes confiáveis para pesquisar benchmarks</h3>
+            <div class="metric-strip-grid" style="margin-top: 1.5rem;">
+                <div class="metric-strip">
+                    <div class="metric-strip-title">WordStream Industry Benchmarks</div>
+                    <div class="metric-strip-desc">wordstream.com<br>Benchmarks de Google Ads e Meta Ads por segmento</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Revealbot Benchmark Report</div>
+                    <div class="metric-strip-desc">revealbot.com/blog<br>ROAS médio por setor no Meta Ads</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Think with Google Brasil</div>
+                    <div class="metric-strip-desc">thinkwithgoogle.com/intl/pt-br<br>Dados de conversão e ROI por setor</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Meta Business Insights</div>
+                    <div class="metric-strip-desc">business.meta.com<br>Dados oficiais de performance do Instagram e Facebook Ads</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Hootsuite / We Are Social</div>
+                    <div class="metric-strip-desc">hootsuite.com/resources<br>Digital Report - comportamento e mídia paga no Brasil</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Kantar Ibope Media</div>
+                    <div class="metric-strip-desc">kantaribopemedia.com<br>Dados de audiência de rádio, TV e mídia exterior no Brasil</div>
+                </div>
+                <div class="metric-strip" style="grid-column: span 1;">
+                    <div class="metric-strip-title">Meio e Mensagem</div>
+                    <div class="metric-strip-desc">meioemensagem.com.br<br>Dados e análises de mercado de comunicação no Brasil</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="slide32">
+        <div class="container">
+            <div class="slide-tag">SLIDE 32 A 41 - DISTRIBUIÇÃO DA VERBA</div>
+            <h2 class="section-title">Como decidir quanto vai para cada canal<br><span style="color: var(--text-muted); font-size: 2rem; font-weight:300;">Cinco perguntas para definir a distribuição da verba</span></h2>
+
+            <div class="editorial-grid" style="margin-top: 4rem; margin-bottom: 4rem;">
+                <div class="col-4">
+                    <div class="indicator-card">
+                        <div class="indicator-num">1</div>
+                        <h3>Persona</h3>
+                        <p>Quais canais são mais adequados para a minha persona? Onde ela passa o tempo? Como ela descobre marcas? Como ela toma decisões de compra? O dado de uso de canal pela persona valida a prioridade. Quem tem maior alcance e aderência sobre a persona recebe prioridade na distribuição.</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="indicator-card">
+                        <div class="indicator-num">2</div>
+                        <h3>ROAS Histórico</h3>
+                        <p>Qual o ROAS histórico de cada canal no meu nicho? Canais com ROAS comprovadamente maior para o segmento entregam mais retorno por real investido. O dado de ROAS por canal no seu segmento orienta onde concentrar o investimento. O canal com maior ROAS histórico para o seu setor deve receber mais verba.</p>
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="indicator-card">
+                        <div class="indicator-num">3 & 4</div>
+                        <h3>Conversão vs Suporte</h3>
+                        <p><strong>3.</strong> Qual canal tem mais chance de converter diretamente? Canal de conversão captura quem já quer comprar ou já conhece a marca. Canal de maior intenção ou maior taxa de conversão recebe mais verba.</p>
+                        <p style="margin-top: 1rem;"><strong>4.</strong> Qual canal serve de suporte para os outros? Canal que gera descoberta e consideração, mas não converte sozinho. Recebe verba proporcional ao papel de apoio na jornada.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="editorial-grid" style="margin-bottom: 4rem;">
+                <div class="col-6">
+                    <div class="indicator-card">
+                        <div class="indicator-num">5</div>
+                        <h3>Ticket Médio</h3>
+                        <p>O ticket médio justifica o investimento nesse canal? Produto de R$ 50 não precisa de R$ 15.000 em influenciador. Serviço de R$ 5.000 pode justificar. O ticket médio calibra o teto de quanto faz sentido investir por canal.</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="indicator-card" style="border-color: var(--primary);">
+                        <span class="slide-tag">Regra prática para distribuir a verba</span>
+                        <p style="margin-bottom: 0.5rem;">• <strong>O canal principal</strong> da estratégia recebe entre <strong>30% e 40%</strong> da verba total. (Principal = canal com maior ROAS comprovado para o segmento e maior aderência à persona).</p>
+                        <p style="margin-bottom: 0.5rem;">• <strong>Os canais de suporte</strong> dividem o restante conforme o papel de cada um: Canal de alcance: 20% a 25% | Canal de remarketing: 15% a 20% | Autoridade e relacionamento: o que sobrar pelo peso estratégico.</p>
+                        <p style="margin-top: 1rem; color: var(--primary); font-weight: bold;">A soma deve fechar exatamente R$ 35.000. Nenhum real sem alocação. Nenhum canal sem justificativa.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="slide-tag">Exemplo de distribuição inteligente</h3>
+            <div class="metric-strip-grid">
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Google Search</div>
+                    <div class="channel-budget" style="font-size: 1.3rem;">R$ 12.000 (34%)</div>
+                    <div class="metric-strip-desc" style="margin-top:0.5rem;">Canal principal, intenção de compra, ROAS mais alto</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Instagram Ads</div>
+                    <div class="channel-budget" style="font-size: 1.3rem;">R$ 9.000 (26%)</div>
+                    <div class="metric-strip-desc" style="margin-top:0.5rem;">Canal de alcance, persona ativa, descoberta e consideração</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Remarketing</div>
+                    <div class="channel-budget" style="font-size: 1.3rem;">R$ 7.000 (20%)</div>
+                    <div class="metric-strip-desc" style="margin-top:0.5rem;">Canal de conversão complementar, fecha quem já demonstrou interesse</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">Portal local</div>
+                    <div class="channel-budget" style="font-size: 1.3rem;">R$ 4.000 (11%)</div>
+                    <div class="metric-strip-desc" style="margin-top:0.5rem;">Canal de autoridade, credibilidade e alcance regional</div>
+                </div>
+                <div class="metric-strip">
+                    <div class="metric-strip-title">WhatsApp</div>
+                    <div class="channel-budget" style="font-size: 1.3rem;">R$ 3.000 (9%)</div>
+                    <div class="metric-strip-desc" style="margin-top:0.5rem;">Canal de relacionamento, base própria, custo baixo, conversão alta</div>
+                </div>
+                <div class="metric-strip" style="background: rgba(255,94,0,0.1); border-color: var(--primary);">
+                    <div class="metric-strip-title" style="color: #fff;">TOTAL</div>
+                    <div class="channel-budget" style="font-size: 1.5rem; color: #fff;">R$ 35.000 (100%)</div>
+                    <div class="metric-strip-desc" style="color: rgba(255,255,255,0.8);">Fechamento exato da verba da atividade</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="exemplo1">
+        <div class="container">
+            <div class="slide-tag">SLIDE 42 A 58</div>
+            <div class="example-header-box">
+                <span class="slide-tag" style="margin-bottom:0.5rem;">EXEMPLO 1</span>
+                <h2 class="section-title" style="margin-bottom: 1rem;">EMPRESA BEM ONLINE</h2>
+                <p class="text-block-premium">Loja de acessórios femininos que vende pelo Instagram e pelo site</p>
+                <p style="margin-top: 1rem; color: var(--text-muted);">
+                    <strong>Empresa:</strong> Loja de acessórios femininos | 
+                    <strong>Objetivo:</strong> Venda online - Gerar 200 vendas online em 15 dias | 
+                    <strong>Duração:</strong> 15 dias | 
+                    <strong>Verba:</strong> R$ 35.000 | 
+                    <strong>Ticket médio:</strong> R$ 120
+                </p>
+                <p style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); font-size: 0.9rem; border-left: 1px solid var(--border);">
+                    <strong>Persona — Júlia, 24 anos:</strong> estudante universitária, renda própria de R$ 2.000/mês, passa em média 3h por dia no Instagram e Tik Tok, descobre marcas por Reels e pelo que as pessoas que segue usam, compra pelo site após ver no social.
+                </p>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 1: Instagram e Facebook Ads</div>
+                    <div class="channel-budget">R$ 13.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Júlia passa em média 3h diárias no Instagram e usa a plataforma como principal canal de descoberta de marcas.</p>
+                    <span class="source-tag">Segundo We Are Social e Hootsuite Digital 2024, 89% das mulheres brasileiras entre 18 e 29 anos usam o Instagram ativamente, e 62% afirmam ter descoberto uma marca nova pela plataforma nos últimos 30 dias. O formato Reels tem taxa de engajamento 22% maior do que Feed estático para marcas de moda e acessórios (Hootsuite Social Trends 2024).</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Nosso objetivo é gerar 200 vendas em 15 dias. O Instagram Ads permite segmentação por comportamento de compra online, interesse em moda e localização, com CPC médio de R$ 0,50 a R$ 1,20 para o segmento de moda no Brasil (Revealbot Benchmark Report 2024). Com R$ 13.000 e CPC médio de R$ 0,80, estima-se 16.250 cliques. Com taxa de conversao média de 1,5% para e-commerce de moda (Revealbot 2024), a projeção é de aproximadamente 243 vendas só por esse canal.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS para moda no Meta Ads e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Impressões e alcance total | CTR (meta: acima de 1,5%) | CPC realizado vs. planejado | Taxa de conversão do site vindo do Instagram | Número de vendas atribuídas ao canal | ROAS realizado ao final dos 15 dias</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 2: Tik Tok Ads</div>
+                    <div class="channel-budget">R$ 8.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Júlia é também usuário ativa do Tik Tok, onde consome conteúdo de moda, trends e hauls de compras.</p>
+                    <span class="source-tag">Segundo Tik Tok Business Insights (2024), 67% dos usuários brasileiros do Tik Tok entre 18 e 24 anos afirmam que o aplicativo os influenciou a comprar um produto que não planejavam adquirir. Para marcas de acessórios e moda, o Tik Tok tem CPM médio 35% menor que o Instagram, o que significa mais alcance pelo mesmo investimento.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>O Tik Tok gera descoberta orgânica acelerada - o algoritmo distribui conteúdo pago de forma similar ao orgânico, aumentando o alcance real da campanha. Para uma loja de acessórios com apelo visual, o formato In-Feed Video é altamente eficiente para gerar tráfego qualificado para o site.</p>
+                    <span class="source-tag">Segundo Tik Tok for Business (2024), campanhas de e-commerce de moda no Tik Tok têm taxa de clique média de 1,8%, acima da média do setor em outras plataformas.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS para moda no Tik Tok Ads e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Visualizações do vídeo e taxa de conclusão | CTR do anúncio | Cliques para o site | Taxa de conversão do tráfego vindo do Tik Tok | Número de vendas atribuídas | ROAS realizado</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 3: Remarketing</div>
+                    <div class="channel-budget">R$ 7.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Júlia pesquisa e visita sites antes de comprar - típico da geração Z. O remarketing reimpacta quem já demonstrou interesse com custo muito menor do que aquisição de novo público.</p>
+                    <span class="source-tag">Segundo Think with Google (2023), 73% dos consumidores entre 18 e 25 anos visitam um site mais de uma vez antes de finalizar a compra.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Remarketing tem as maiores taxas de conversão entre os formatos digitais porque fala com quem já conhece a marca. Para uma campanha de 15 dias com objetivo de 200 vendas, o remarketing fecha as vendas que os outros canais iniciaram.</p>
+                    <span class="source-tag">Segundo WordStream (2024), anúncios de remarketing têm CTR até 10 vezes maior do que anúncios de display para novo público, e taxa de conversão média de 3,5% para e-commerce contra 1,5% de campanhas de aquisição.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de remarketing para e-commerce de moda e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Tamanho do público de remarketing gerado | CTR vs. campanha de aquisição | Taxa de conversão do remarketing | Número de vendas fechadas via remarketing | CAC | ROAS realizado</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 4: Influenciador digital</div>
+                    <div class="channel-budget">R$ 5.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Júlia confia mais na indicação de pessoas que segue do que em anúncios diretos da marca.</p>
+                    <span class="source-tag">Segundo Influencer Marketing Hub (2024), 61% dos consumidores entre 18 e 29 anos afirmam que a recomendação de um influenciador que seguem tem mais peso na decisão de compra do que um anúncio pago da própria marca. Microinfluenciadores (10 mil a 100 mil seguidores) têm taxa de engajamento média de 3,86% contra 1,21% de influenciadores com mais de 1 milhão (Influencer Marketing Hub 2024).</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Um microinfluenciador de moda com público alinhado à persona gera prova social e credibilidade de forma mais eficiente e barata do que mídia paga pura. Para os R$ 5.000 é possível contratar 2 a 3 microinfluenciadores com público feminino jovem, gerando alcance orgânico adicional sem custo de mídia.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de influenciador para moda e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Alcance dos posts e Stories | Engajamento (curtidas, comentários, salvamentos) | Cliques no link da bio | Vendas rastreadas por cupom exclusivo do influenciador | Crescimento de seguidores durante o período</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 5: Google Shopping</div>
+                    <div class="channel-budget">R$ 2.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Quando Júlia decide comprar e vai ao Google, ela compara preços e produtos visualmente. O Google Shopping aparece no topo dos resultados com foto, preço e nome da loja, capturando exatamente esse momento.</p>
+                    <span class="source-tag">Segundo Think with Google (2023), 76% dos consumidores que fazem uma busca local visitam um negócio em até 24h, e para e-commerce de moda os anúncios de Shopping têm CTR médio de 0,86% com conversão acima da média do setor.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Google Shopping é canal de conversão direta — captura quem já está no momento de decisão de compra. Com R$ 2.000 e CPC médio de R$ 0,60 para moda no Shopping (WordStream 2024), a estimativa é de 3.300 cliques com alta intenção de compra.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de Google Shopping para moda e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Impressões no Shopping | CTR | CPC realizado | Taxa de conversão | Número de vendas atribuídas | ROAS realizado</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="exemplo2">
+        <div class="container">
+            <div class="slide-tag">SLIDE 59 A 75</div>
+            <div class="example-header-box">
+                <span class="slide-tag" style="margin-bottom:0.5rem;">EXEMPLO 2</span>
+                <h2 class="section-title" style="margin-bottom: 1rem;">EMPRESA BEM OFFLINE</h2>
+                <p class="text-block-premium">Loja de materiais de construção em Tubarão/SC</p>
+                <p style="margin-top: 1rem; color: var(--text-muted);">
+                    <strong>Empresa:</strong> Loja de materiais de construção em Tubarão/SC | 
+                    <strong>Objetivo:</strong> Aumentar o volume de clientes pessoa física e pequenos empreiteiros em 30 dias | 
+                    <strong>Duração:</strong> 30 dias | 
+                    <strong>Verba:</strong> R$ 35.000 | 
+                    <strong>Ticket médio:</strong> R$ 800
+                </p>
+                <p style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); font-size: 0.9rem; border-left: 1px solid var(--border);">
+                    <strong>Persona — Seu Carlos, 58 anos:</strong> autônomo, pedreiro e pequeno empreiteiro, não usa redes sociais, ouve rádio no carro e no trabalho, lê jornal aos domingos, decide fornecedor por indicação de colegas e preço, passa na loja para ver produto pessoalmente.
+                </p>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 1: Rádio local</div>
+                    <div class="channel-budget">R$ 14.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Seu Carlos ouve rádio no carro e na obra durante todo o dia de trabalho. Em cidades do interior e médio porte como Tubarão, a rádio local tem penetração ainda maior por ser referência de informação regional.</p>
+                    <span class="source-tag">Segundo Kantar Ibope Media (2023), o rádio atinge 70% dos brasileiros acima de 50 anos semanalmente, com maior concentração de audiência nos horários de 7h às 9h e 11h às 13h, exatamente quando Carlos está em deslocamento ou na obra.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>O objetivo é aumentar o volume de clientes locais. A rádio local fala com o público certo, na região certa, no momento em que Carlos está trabalhando e pensando nos materiais que precisa. A frequência de veiculação é o que converte: o ideal é no mínimo 3 inserções por dia em horários estratégicos.</p>
+                    <span class="source-tag">Segundo Nielsen Audio (2023), 68% dos ouvintes de rádio AM e FM em cidades do interior afirmam ter visitado um estabelecimento comercial após ouvir um anúncio na rádio.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de rádio para varejo local e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Número de inserções veiculadas no período (checking com a emissora) | Alcance estimado da emissora nos horários contratados | Aumento de clientes novos durante o período vs. período anterior | Pergunta no atendimento: como ficou sabendo da loja? | Volume de vendas no período vs. mesmo período do ano anterior</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 2: Outdoor e mídia exterior</div>
+                    <div class="channel-budget">R$ 8.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Seu Carlos se desloca de carro pelas ruas de Tubarão todos os dias para chegar às obras. Ele não consome mídia digital, mas passa pelos mesmos trajetos repetidamente, tornando a mídia exterior altamente eficiente. A repetição de exposição é o que grava a mensagem.</p>
+                    <span class="source-tag">Segundo Ibope OOH Data (2023), outdoors em vias de alto fluxo em cidades do interior têm OTS médio de 120 mil impactos por mês por ponto.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Outdoor não converte sozinho, mas reforça a presença de marca e complementa outros canais. Para uma loja local que quer ser lembrada no momento em que Carlos for comprar material, estar visível nas principais rotas da cidade é fundamental.</p>
+                    <span class="source-tag">Segundo pesquisa da CCSP (2023), 71% dos motoristas afirmam prestar atenção em outdoors durante o trajeto, e 43% já visitaram um estabelecimento após ver um outdoor nas proximidades.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de mídia exterior para varejo local e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>OTS estimado dos pontos contratados | Aumento de buscas pelo nome da loja no Google durante o período | Volume de clientes novos perguntados sobre como conheceram a loja | Comparativo de vendas no período com mesmo período anterior</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 3: Jornal local impresso</div>
+                    <div class="channel-budget">R$ 5.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Seu Carlos lê jornal aos domingos, hábito consolidado em sua faixa etária. O encarte de ofertas e os anúncios de varejo têm alta taxa de leitura nesse perfil.</p>
+                    <span class="source-tag">Segundo Kantar Ibope Media (2023), 58% dos leitores regulares de jornal impresso no Brasil têm mais de 45 anos, e em cidades de médio porte como Tubarão, o jornal local é referência de credibilidade e informação regional.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Anúncio de jornal local com oferta específica, preço e endereço da loja gera intenção de visita. O formato de meia página em dia de maior circulação (domingo) maximiza o impacto.</p>
+                    <span class="source-tag">Segundo pesquisa da ANJ (2023), 64% dos leitores de jornal impresso afirmam que anúncios de varejo local influenciam suas decisões de compra.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de jornal impresso para varejo e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Circulação do jornal no período | Cupom ou código promocional exclusivo do anúncio | Aumento de clientes no período de veiculação | Pergunta no atendimento: como ficou sabendo da loja?</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 4: Panfleto e busdoor</div>
+                    <div class="channel-budget">R$ 5.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Seu Carlos circula pelo centro de Tubarão. O panfleto entregue próximo a lojas de materiais de construção concorrentes e em pontos de concentração de pedreiros e empreiteiros chega diretamente no momento e lugar certos. O busdoor gera repetição de exposição nas rotas de maior fluxo da cidade.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Material impresso com oferta de produto e preço específico gera ação imediata em público que decide de forma mais direta. Para varejo local com ticket médio de R$ 800, a conversão de 1 a cada 50 panfletos distribuídos já justifica o investimento.</p>
+                    <span class="source-tag">Segundo a ABAP (2022), materiais de distribuição direta têm taxa de resposta média de 2% a 5% quando entregues a público segmentado no local certo.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de material impresso para varejo e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Quantidade de panfletos distribuídos | Cupom de desconto rastreável exclusivo | Número de clientes que apresentaram o cupom | Impacto de busdoor estimado pelo fornecedor | Comparativo de vendas no período</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 5: WhatsApp com base de clientes</div>
+                    <div class="channel-budget">R$ 3.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Apesar de não usar redes sociais, Seu Carlos usa WhatsApp para se comunicar no trabalho e com fornecedores. Para um público que não usa e-mail e não está nas redes, o WhatsApp é o único canal digital que chega até ele.</p>
+                    <span class="source-tag">Segundo We Are Social Digital 2024, o WhatsApp está presente em 93% dos smartphones brasileiros e tem taxa de abertura de mensagem de 98%, a maior entre todos os canais de comunicação digital.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>A loja já tem base de clientes com contato salvo. Uma mensagem com oferta do mês, condição especial para cliente antigo e link para WhatsApp de atendimento tem custo próximo a zero e alta taxa de conversão porque fala com quem já comprou antes. O WhatsApp Business permite criar catálogo de produtos e responder pedidos de orçamento de forma organizada.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de WhatsApp marketing para varejo e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Número de mensagens enviadas | Taxa de abertura (via WhatsApp Business) | Número de respostas e solicitações de orçamento | Vendas fechadas a partir de contatos via WhatsApp | Taxa de recompra de clientes da base no período</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="exemplo3">
+        <div class="container">
+            <div class="slide-tag">SLIDE 76 A 92</div>
+            <div class="example-header-box">
+                <span class="slide-tag" style="margin-bottom:0.5rem;">EXEMPLO 3</span>
+                <h2 class="section-title" style="margin-bottom: 1rem;">EMPRESA INTERGERACIONAL</h2>
+                <p class="text-block-premium">Escola de cursos profissionalizantes em Tubarão/SC</p>
+                <p style="margin-top: 1rem; color: var(--text-muted);">
+                    <strong>Empresa:</strong> Escola de cursos profissionalizantes em Tubarão/SC | 
+                    <strong>Objetivo:</strong> Gerar 80 matrículas em 30 dias | 
+                    <strong>Duração:</strong> 30 dias | 
+                    <strong>Verba:</strong> R$ 35.000 | 
+                    <strong>Ticket médio:</strong> R$ 900
+                </p>
+                <div style="margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; border-top: 1px dashed var(--border); padding-top: 1rem;">
+                    <p style="font-size: 0.85rem;"><strong>PERSONA A — Lucas, 19 anos:</strong> terminando o ensino médio, pesquisa cursos no Google e no Instagram, decide com base em depoimentos de ex-alunos e pelo que vê nas redes.</p>
+                    <p style="font-size: 0.85rem;"><strong>PERSONA B — Dona Maria, 48 anos:</strong> mãe de Lucas, influencia a decisão financeira, ouve rádio, vê outdoor, não usa redes sociais mas usa WhatsApp.</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 1: Google Search</div>
+                    <div class="channel-budget">R$ 10.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Lucas pesquisa no Google quando está considerando um curso. Quem digita "curso profissionalizante Tubarão" já está no momento de decisão.</p>
+                    <span class="source-tag">Segundo Think with Google (2023), 74% dos jovens entre 16 e 24 anos usam o Google como primeiro passo na pesquisa de cursos profissionalizantes, e 61% afirmam que os resultados da busca são determinantes na escolha da instituição.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Capturar quem já está buscando ativamente é o caminho mais eficiente para gerar matrículas. Com R$ 10.000 e CPC médio de R$ 2,00 para educação, estima-se 5.000 cliques. Com taxa de conversão de 3,4%, a projeção é de 170 leads qualificados.</p>
+                    <span class="source-tag">Segundo WordStream Industry Benchmarks (2024), a taxa de conversão média de Google Search para o segmento de educação e cursos é de 3,4%, uma das mais altas entre os setores.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de Google Search para educação e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Volume de buscas pelos termos contratados | CTR | CPC realizado | Número de leads gerados | CPL | Taxa de conversão de lead para matrícula | ROAS realizado</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 2: Instagram Ads</div>
+                    <div class="channel-budget">R$ 7.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Lucas usa o Instagram diariamente e toma decisões influenciado pelo que vê e pelo que pessoas que segue fazem.</p>
+                    <span class="source-tag">Segundo We Are Social Digital 2024, 91% dos brasileiros entre 16 e 24 anos usam o Instagram, e depoimentos em vídeo de ex-alunos no formato Reels têm taxa de engajamento 34% maior do que anúncios de imagem estática para o setor educacional (Hootsuite Social Trends 2024).</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>O Instagram gera consideração e confiança, dois fatores decisivos para matrícula em cursos. Um Reels com depoimento real de ex-aluno empregado após o curso gera mais conversão do que qualquer copy publicitária. O Instagram permite segmentação por interesse em mercado de trabalho, empreendedorismo e cursos técnicos — interesses diretos de Lucas.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de Meta Ads para educação e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Alcance e impressões | CTR | CPL gerado pelo Instagram | Taxa de conversão de clique para lead | Número de matrículas atribuídas ao canal | ROAS realizado</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 3: Rádio local</div>
+                    <div class="channel-budget">R$ 8.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Dona Maria ouve rádio enquanto trabalha em casa e durante os deslocamentos. Uma campanha de rádio que fala sobre empregabilidade e futuro do filho chega diretamente no momento em que Dona Maria está formando opinião.</p>
+                    <span class="source-tag">Segundo Kantar Ibope Media (2023), o rádio atinge 78% das mulheres brasileiras entre 40 e 55 anos semanalmente, com pico de audiência entre 8h e 12h.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>A matrícula em cursos profissionalizantes para jovens frequentemente é uma decisão familiar. Enquanto o digital convence Lucas, a rádio convence Dona Maria, que influencia o pagamento.</p>
+                    <span class="source-tag">Segundo Nielsen Audio (2023), 72% dos ouvintes de rádio em cidades de médio porte confiam mais em marcas que anunciam em rádio local do que em redes nacionais ou digitais.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de rádio para educação e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Número de inserções veiculadas | Alcance estimado nos horários contratados | Aumento de ligações ou visitas presenciais durante o período | Pergunta no atendimento: como ficou sabendo do curso? | Volume de matrículas no período vs. anterior</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 4: Outdoor</div>
+                    <div class="channel-budget">R$ 5.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Lucas vê outdoor no trajeto casa-escola. Dona Maria vê no trajeto casa-trabalho. O outdoor impacta ambas as personas. Em Tubarão, pontos próximos a escolas estaduais e ao centro comercial têm alto OTS para os dois perfis.</p>
+                    <span class="source-tag">Segundo Ibope OOH Data (2023), outdoors em cidades do interior têm OTS médio de 80 mil a 150 mil impactos por mês dependendo da localização.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>O outdoor reforça a presença de marca para quem já viu o anúncio no Instagram ou ouviu na rádio. A repetição de exposição consolida a decisão. Uma mensagem direta — nome do curso, data de início das matrículas e número de WhatsApp — gera ação em quem já estava considerando.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de outdoor para educação e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>OTS estimado dos pontos contratados | Aumento de buscas pelo nome da escola no Google durante o período | Aumento de menções espontâneas no atendimento | Volume de matrículas no período</p>
+                </div>
+            </div>
+
+            <div class="channel-block fade-in-up">
+                <div class="channel-title-row">
+                    <div class="channel-title">Canal 5: WhatsApp com leads e ex-alunos</div>
+                    <div class="channel-budget">R$ 5.000</div>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para a persona</div>
+                    <p>Lucas usa WhatsApp o dia todo. Dona Maria usa WhatsApp para se comunicar com família e trabalho. É o único canal digital que chega nas duas personas com a mesma eficiência. Para uma escola que já tem contatos de ex-alunos e familiares, a lista de transmissão custa próximo a zero e gera leads quentes.</p>
+                    <span class="source-tag">Segundo We Are Social Digital 2024, o WhatsApp tem taxa de abertura de 98% no Brasil, contra 20% de e-mail marketing.</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Por que faz sentido para o objetivo</div>
+                    <p>Uma mensagem de WhatsApp para ex-alunos pedindo indicação de conhecidos interessados em cursos, com bônus para quem indicar, é o canal de menor custo e maior taxa de conversão para matrículas.</p>
+                    <span class="source-tag">Leads que chegam por indicação têm taxa de conversão 4 vezes maior do que leads de mídia paga, segundo HubSpot State of Marketing (2024).</span>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">ROAS esperado</div>
+                    <p style="color: var(--text-muted); font-style: italic;">Grupo pesquisa o benchmark de ROAS de WhatsApp marketing para educação e cita a fonte.</p>
+                </div>
+                <div class="channel-subsection">
+                    <div class="channel-subsection-label">Métricas e KPIs para comprovar o retorno</div>
+                    <p>Número de mensagens enviadas | Taxa de resposta | Número de indicações geradas | Matrículas fechadas via WhatsApp | CPL via WhatsApp vs. canais pagos | Taxa de recompra/indicação de ex-alunos</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="maonamassa">
+        <div class="container">
+            <div class="slide-tag">SLIDE 93 A 97 - MÃO NA MASSA & ORIENTAÇÕES</div>
+            <h2 class="section-title">Mão na massa</h2>
+
+            <div class="editorial-grid" style="margin-top: 3rem; margin-bottom: 4rem;">
+                <div class="col-6">
+                    <p class="text-block-premium" style="font-size: 1.4rem; color: var(--primary); margin-bottom: 1.5rem;">Abra o template agora</p>
+                    <p>Acesse pelo QR Code ou na pasta do Drive compartilhada pela professora. O template tem as instruções de preenchimento dentro dele.</p>
+                    
+                    <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; color: rgba(255,255,255,0.85);">
+                        <div><strong>1 -</strong> Para cada canal: valor investido</div>
+                        <div><strong>2 -</strong> Defesa da persona com dado quantitativo e fonte</div>
+                        <div><strong>3 -</strong> Defesa do objetivo com dado quantitativo e fonte</div>
+                        <div><strong>4 -</strong> ROAS pesquisado com fonte citada</div>
+                        <div><strong>5 -</strong> Receita esperada desse canal (Verba do canal x ROAS)</div>
+                        <div><strong>6 -</strong> Métricas e KPIs de comprovação do retorno</div>
+                    </div>
+                </div>
+
+                <div class="col-6" style="border-left: 1px solid var(--border); padding-left: 3rem;">
+                    <span class="slide-tag">ATENÇÃO TOTAL</span>
+                    <p class="statement-text" style="font-size: 1.8rem; margin-bottom: 1.5rem;">Esta aula e a próxima são as mais importantes da primeira parte do curso.</p>
+                    <p style="margin-bottom: 1rem;">No dia <strong>06/07</strong> é a <strong>Aula 8: avaliação oficial</strong>. A entrega formal do documento (parte 1) nesse dia.</p>
+                    <p style="color: var(--primary); font-weight: bold; font-family: var(--font-display); letter-spacing: 0.1em; margin-top: 2rem;">FOCO TOTAL.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 1rem;">Dúvida durante o preenchimento: chame a professora. A professora está à disposição. Chame quando precisar. Silêncio e organização para não atrapalhar os colegas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Simple Scroll-Driven Intersection Observer for Premium Animated Entrance
+        document.addEventListener("DOMContentLoaded", function() {
+            const observerOptions = {
+                root: null,
+                rootMargin: "0px",
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add("visible");
+                    }
+                });
+            }, observerOptions);
+
+            const animElements = document.querySelectorAll(".fade-in-up");
+            animElements.forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
